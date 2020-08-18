@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CMFCCHATServerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_EN_CHANGE(IDC_PORT_EDIT, &CMFCCHATServerDlg::OnEnChangePortEdit)
+	ON_BN_CLICKED(IDC_START_BTN, &CMFCCHATServerDlg::OnBnClickedStartBtn)
 END_MESSAGE_MAP()
 
 
@@ -164,4 +165,18 @@ void CMFCCHATServerDlg::OnEnChangePortEdit()
 	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
 
 	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CMFCCHATServerDlg::OnBnClickedStartBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TRACE("[Chat Client]Start Server");
+	//从控件里获取内容
+	CString csPort;
+	GetDlgItem(IDC_PORT_EDIT)->GetWindowText(csPort);
+	//cstring 转char* 使用USES_CONVERSION
+	USES_CONVERSION;
+	LPCSTR szPort = (LPCSTR)T2A(csPort);
+	TRACE("[Chat Client]szPort=%s", szPort);
 }
