@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "CServerSocket.h"
 
 // CMFCCHATServerDlg 对话框
 class CMFCCHATServerDlg : public CDialogEx
@@ -34,4 +34,6 @@ protected:
 public:
 	afx_msg void OnEnChangePortEdit();
 	afx_msg void OnBnClickedStartBtn();
+	CListBox m_list;
+	CServerSocket* m_server;
 };

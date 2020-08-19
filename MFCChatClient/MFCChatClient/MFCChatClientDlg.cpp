@@ -59,6 +59,8 @@ CMFCChatClientDlg::CMFCChatClientDlg(CWnd* pParent /*=nullptr*/)
 void CMFCChatClientDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_HISTORYMSG_LIST, m_list);
+	DDX_Control(pDX, IDC_SENDMSG_EDIT, m_input);
 }
 
 BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
@@ -103,7 +105,8 @@ BOOL CMFCChatClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
-
+	GetDlgItem(IDC_PORT_EDIT)->SetWindowText(_T("6000"));
+	GetDlgItem(IDC_IPADDRESS)->SetWindowText(_T("127.0.0.1"));
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -189,6 +192,7 @@ void CMFCChatClientDlg::OnBnClickedClearmsgBtn()
 void CMFCChatClientDlg::OnBnClickedConnectBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	//把IP和端口号拿到
 	TRACE("[Chat Client]Connect Button");
 	CString csPort, csIp;
 	//从控件里获取内容
@@ -200,6 +204,14 @@ void CMFCChatClientDlg::OnBnClickedConnectBtn()
 	LPCSTR szPort = (LPCSTR)T2A(csPort);
 	LPCSTR szIP = (LPCSTR)T2A(csIp);
 	TRACE("[Chat Client]szPort=%s,szIp=%s", szPort, szIP);
+	UINT uPort = _ttoi(csPort);
+
+	//连接时new一个CMySocket对象去连接
+	m_client = new CMySocket;
+	//创建一个套接字
+	m_client->Create();
+	//连接
+	m_client->Connect(csIp, uPort);
 }
 
 

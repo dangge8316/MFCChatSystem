@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CMySocket.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MFCChatClient.h" />
     <ClInclude Include="MFCChatClientDlg.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CMySocket.cpp" />
     <ClCompile Include="MFCChatClient.cpp" />
     <ClCompile Include="MFCChatClientDlg.cpp" />
     <ClCompile Include="pch.cpp">

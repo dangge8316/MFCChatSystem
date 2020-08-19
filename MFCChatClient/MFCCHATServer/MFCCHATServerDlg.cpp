@@ -59,6 +59,7 @@ CMFCCHATServerDlg::CMFCCHATServerDlg(CWnd* pParent /*=nullptr*/)
 void CMFCCHATServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_MSG_LIST, m_list);
 }
 
 BEGIN_MESSAGE_MAP(CMFCCHATServerDlg, CDialogEx)
@@ -102,6 +103,7 @@ BOOL CMFCCHATServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	GetDlgItem(IDC_PORT_EDIT)->SetWindowText(_T("6000"));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -179,4 +181,13 @@ void CMFCCHATServerDlg::OnBnClickedStartBtn()
 	USES_CONVERSION;
 	LPCSTR szPort = (LPCSTR)T2A(csPort);
 	TRACE("[Chat Client]szPort=%s", szPort);
+	UINT uPort;
+	uPort = _ttoi(csPort);
+	//启动时,new一个seversocket
+	//创建一个服务器socket对象
+	m_server = new CServerSocket;
+	//创建套接字
+	m_server->Create(uPort);
+	//监听端口,等待连接
+	m_server->Listen();
 }
