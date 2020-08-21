@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CLEARMSG_BTN, &CMFCChatClientDlg::OnBnClickedClearmsgBtn)
 	ON_BN_CLICKED(IDC_CONNECT_BTN, &CMFCChatClientDlg::OnBnClickedConnectBtn)
 	ON_BN_CLICKED(IDC_DISCONNECT_BTN, &CMFCChatClientDlg::OnBnClickedDisconnectBtn)
+	ON_BN_CLICKED(IDC_SEND_BTN, &CMFCChatClientDlg::OnBnClickedSendBtn)
 END_MESSAGE_MAP()
 
 
@@ -208,14 +209,49 @@ void CMFCChatClientDlg::OnBnClickedConnectBtn()
 
 	//连接时new一个CMySocket对象去连接
 	m_client = new CMySocket;
-	//创建一个套接字
-	m_client->Create();
+	//创建一个套接字 容错
+	if (!m_client->Create())
+	{
+		TRACE("[Chat Client]m_client Create error %d", GetLastError());
+		return;
+	}
+	else
+	{
+		TRACE("[Chat Client]m_client Create Success...");
+	}
 	//连接
-	m_client->Connect(csIp, uPort);
+	if (m_client->Connect(csIp, uPort) != SOCKET_ERROR)
+	{
+		TRACE("[Chat Client]m_client Connect errorCode=%d", GetLastError());
+		return;
+	}
 }
 
 
 void CMFCChatClientDlg::OnBnClickedDisconnectBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void CMFCChatClientDlg::OnBnClickedSendBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//1.获取编辑框内容
+	CString strTmpMsg;
+	GetDlgItem(IDC_SENDMSG_EDIT)->GetWindowTextW(strTmpMsg);
+	USES_CONVERSION;
+	char* szSendBuf = T2A(strTmpMsg);
+	//2.发送给服务端
+	m_client->Send(szSendBuf, 200, 0);
+	//3.显示到列表框里
+	CString strShow = _T("我:");
+	CString strTime;
+	m_time = CTime::GetCurrentTime();
+	strTime = m_time.Format("%X");
+	strShow = strTime + strShow;
+	strShow += strTmpMsg;
+	m_list.AddString(strShow);
+	UpdateData(FALSE);
+
 }

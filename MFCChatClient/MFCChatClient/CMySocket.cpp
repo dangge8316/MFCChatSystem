@@ -20,7 +20,7 @@ void CMySocket::OnConnect(int nErrorCode)
 	CMFCChatClientDlg* dlg = (CMFCChatClientDlg*)AfxGetApp()->GetMainWnd();
 	CString str;
 	dlg->m_time = CTime::GetCurrentTime();
-	str = dlg->m_time.Format("%x");
+	str = dlg->m_time.Format("%X");
 	str += _T("连接服务器成功:");
 	dlg->m_list.AddString(str);
 	CAsyncSocket::OnConnect(nErrorCode);

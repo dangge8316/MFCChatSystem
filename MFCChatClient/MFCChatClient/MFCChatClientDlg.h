@@ -39,4 +39,5 @@ public:
 	CListBox m_list;
 	CTime m_time;
 	CEdit m_input;
+	afx_msg void OnBnClickedSendBtn();
 };

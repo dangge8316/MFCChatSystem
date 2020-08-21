@@ -180,14 +180,33 @@ void CMFCCHATServerDlg::OnBnClickedStartBtn()
 	//cstring 转char* 使用USES_CONVERSION
 	USES_CONVERSION;
 	LPCSTR szPort = (LPCSTR)T2A(csPort);
-	TRACE("[Chat Client]szPort=%s", szPort);
+	TRACE("[Chat Server]szPort=%s", szPort);
 	UINT uPort;
 	uPort = _ttoi(csPort);
 	//启动时,new一个seversocket
 	//创建一个服务器socket对象
 	m_server = new CServerSocket;
 	//创建套接字
-	m_server->Create(uPort);
+	if (!m_server->Create(uPort))
+	{
+		TRACE("[Chat Server]m_server Create errorCode =%d", GetLastError());
+		return;
+	}
+	else
+	{
+		TRACE("[Chat Server]m_server Create Success...");
+	}
 	//监听端口,等待连接
-	m_server->Listen();
+	if (!m_server->Listen())
+	{
+		TRACE("[Chat Server]m_server Listen errorCode=%d", GetLastError());
+		return;
+	}
+
+	CString str;
+	m_time = CTime::GetCurrentTime();
+	str = m_time.Format("%X");
+	str += _T("建立服务...");
+	m_list.AddString(str);
+	UpdateData(FALSE);
 }
