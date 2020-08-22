@@ -8,6 +8,7 @@
 #include "MFCCHATServerDlg.h"
 #include "afxdialogex.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -68,6 +69,7 @@ BEGIN_MESSAGE_MAP(CMFCCHATServerDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_EN_CHANGE(IDC_PORT_EDIT, &CMFCCHATServerDlg::OnEnChangePortEdit)
 	ON_BN_CLICKED(IDC_START_BTN, &CMFCCHATServerDlg::OnBnClickedStartBtn)
+	ON_BN_CLICKED(IDC_SEND_BTN, &CMFCCHATServerDlg::OnBnClickedSendBtn)
 END_MESSAGE_MAP()
 
 
@@ -169,6 +171,20 @@ void CMFCCHATServerDlg::OnEnChangePortEdit()
 	// TODO:  在此添加控件通知处理程序代码
 }
 
+//定义一个显示信息的成员函数
+CString CMFCCHATServerDlg::CutShowString(CString strInfo, CString strMsg)
+{
+	//格式:时间+昵称+消息
+	CString strTime;
+	CTime tmNow;
+	tmNow = CTime::GetCurrentTime();
+	strTime = tmNow.Format("%X");
+	CString strShow;
+	strShow = strTime + strShow;
+	strShow += strInfo;
+	strShow += strMsg;
+	return strShow;
+}
 
 void CMFCCHATServerDlg::OnBnClickedStartBtn()
 {
@@ -203,10 +219,39 @@ void CMFCCHATServerDlg::OnBnClickedStartBtn()
 		return;
 	}
 
-	CString str;
+	/*CString str;
 	m_time = CTime::GetCurrentTime();
 	str = m_time.Format("%X");
-	str += _T("建立服务...");
-	m_list.AddString(str);
+	str += _T("建立服务...");*/
+
+	CString strShow;
+	CString strInfo = _T("");
+	CString strMsg = _T("建立服务...");
+	strShow = CutShowString(strInfo, strMsg);
+
+	m_list.AddString(strShow);
 	UpdateData(FALSE);
+}
+
+
+void CMFCCHATServerDlg::OnBnClickedSendBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//1.获取编辑框内容
+	CString strTmpMsg;
+	GetDlgItem(IDC_SEND_EDIT)->GetWindowTextW(strTmpMsg);
+	USES_CONVERSION;
+	char* szSendBuf = T2A(strTmpMsg);
+	//2.发送给客户端
+	m_chat->Send(szSendBuf, SERVER_MAX_BUF, 0);
+	//3.显示到列表框里
+	CString strShow;
+	CString strInfo = _T("服务端: ");
+	//CString strMsg = _T("建立服务...");
+	strShow = CutShowString(strInfo, strTmpMsg);
+
+	m_list.AddString(strShow);
+	UpdateData(FALSE);
+	//清空编辑框
+	GetDlgItem(IDC_SEND_EDIT)->SetWindowTextW(_T(""));
 }

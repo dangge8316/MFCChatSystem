@@ -160,35 +160,25 @@ HCURSOR CMFCChatClientDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-//void CMFCChatClientDlg::OnEnChangeEdit1()
-//{
-//	// TODO:  如果该控件是 RICHEDIT 控件，它将不
-//	// 发送此通知，除非重写 CDialogEx::OnInitDialog()
-//	// 函数并调用 CRichEditCtrl().SetEventMask()，
-//	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
-//
-//	// TODO:  在此添加控件通知处理程序代码
-//}
-//
-//
-//void CMFCChatClientDlg::OnEnChangeEdit3()
-//{
-//	// TODO:  如果该控件是 RICHEDIT 控件，它将不
-//	// 发送此通知，除非重写 CDialogEx::OnInitDialog()
-//	// 函数并调用 CRichEditCtrl().SetEventMask()，
-//	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
-//
-//	// TODO:  在此添加控件通知处理程序代码
-//}
-
-
 void CMFCChatClientDlg::OnBnClickedClearmsgBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
 }
 
+//定义一个显示信息的成员函数
+CString CMFCChatClientDlg::CutShowString(CString strInfo,CString strMsg)
+{
+	//格式:时间+昵称+消息
+	CString strTime;
+	CTime tmNow;
+	tmNow = CTime::GetCurrentTime();
+	strTime = tmNow.Format("%X");
+	CString strShow;
+	strShow = strTime + strShow;
+	strShow += strInfo;
+	strShow += strMsg;
+	return strShow;
+}
 
 void CMFCChatClientDlg::OnBnClickedConnectBtn()
 {
@@ -243,15 +233,16 @@ void CMFCChatClientDlg::OnBnClickedSendBtn()
 	USES_CONVERSION;
 	char* szSendBuf = T2A(strTmpMsg);
 	//2.发送给服务端
-	m_client->Send(szSendBuf, 200, 0);
+	m_client->Send(szSendBuf, SEND_MAX_BUF, 0);
 	//3.显示到列表框里
-	CString strShow = _T("我:");
-	CString strTime;
-	m_time = CTime::GetCurrentTime();
-	strTime = m_time.Format("%X");
-	strShow = strTime + strShow;
-	strShow += strTmpMsg;
+	CString strShow;
+	CString strInfo = _T("我: ");
+	CString strMsg = _T("");
+	strShow = CutShowString(strInfo, strTmpMsg);
+
 	m_list.AddString(strShow);
 	UpdateData(FALSE);
+	//清空编辑框
+	GetDlgItem(IDC_SENDMSG_EDIT)->SetWindowTextW(_T(""));
 
 }

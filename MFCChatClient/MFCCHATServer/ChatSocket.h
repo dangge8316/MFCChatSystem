@@ -3,12 +3,12 @@
 #include "MFCCHATServer.h"
 #include "MFCCHATServerDlg.h"
 
-class CChatSocket :
+class ChatSocket :
     public CAsyncSocket
 {
 public:
-    CChatSocket();
-    virtual ~CChatSocket();
-    virtual void OnReceive(int nErrorCode);
+    ChatSocket();
+    virtual ~ChatSocket();
+    virtual void OnReceive(int nEerrorCode);
 };
 

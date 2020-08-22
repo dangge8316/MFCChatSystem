@@ -10,6 +10,7 @@
 
 #include "resource.h"		// 主符号
 
+#define SERVER_MAX_BUF 1024
 
 // CMFCCHATServerApp:
 // 有关此类的实现，请参阅 MFCCHATServer.cpp

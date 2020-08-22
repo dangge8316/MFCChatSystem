@@ -4,12 +4,13 @@
 
 #pragma once
 #include "CServerSocket.h"
-#include "CChatSocket.h"
+#include "ChatSocket.h"
+class ChatSocket;
 
 // CMFCCHATServerDlg 对话框
 class CMFCCHATServerDlg : public CDialogEx
 {
-// 构造
+	// 构造
 public:
 	CMFCCHATServerDlg(CWnd* pParent = nullptr);	// 标准构造函数
 
@@ -18,7 +19,7 @@ public:
 	enum { IDD = IDD_MFCCHATSERVER_DIALOG };
 #endif
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 
@@ -37,6 +38,7 @@ public:
 	afx_msg void OnBnClickedStartBtn();
 	CListBox m_list;
 	CServerSocket* m_server;
-	CChatSocket* m_chat;
-	CTime m_time;	
+	ChatSocket* m_chat;
+	afx_msg void OnBnClickedSendBtn();
+	CString CutShowString(CString strInfo, CString strMsg);
 };
