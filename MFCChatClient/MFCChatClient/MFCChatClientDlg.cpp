@@ -71,6 +71,7 @@ BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CONNECT_BTN, &CMFCChatClientDlg::OnBnClickedConnectBtn)
 	ON_BN_CLICKED(IDC_DISCONNECT_BTN, &CMFCChatClientDlg::OnBnClickedDisconnectBtn)
 	ON_BN_CLICKED(IDC_SEND_BTN, &CMFCChatClientDlg::OnBnClickedSendBtn)
+	ON_BN_CLICKED(IDC_SAVENAME_BTN, &CMFCChatClientDlg::OnBnClickedSavenameBtn)
 END_MESSAGE_MAP()
 
 
@@ -108,6 +109,19 @@ BOOL CMFCChatClientDlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
 	GetDlgItem(IDC_PORT_EDIT)->SetWindowText(_T("6000"));
 	GetDlgItem(IDC_IPADDRESS)->SetWindowText(_T("127.0.0.1"));
+	//从配置文件中获取昵称
+	WCHAR wszName[MAX_PATH] = { 0 };
+	WCHAR strPath[MAX_PATH] = { 0 };
+	//获取当前路径
+	GetCurrentDirectoryW(MAX_PATH, strPath);
+	TRACE("[Chat Client]strPath=%ls", strPath);
+	CString strFilePath;
+	strFilePath.Format(L"%ls//Test.ini", strPath);
+	GetPrivateProfileStringW(_T("CLIENT"), _T("NAME"), NULL,wszName,MAX_PATH,strFilePath);
+	TRACE("[Chat Client]wszName=%ls", wszName);
+	SetDlgItemText(IDC_NAME_EDIT, wszName);
+	UpdateData(FALSE);
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -245,4 +259,28 @@ void CMFCChatClientDlg::OnBnClickedSendBtn()
 	//清空编辑框
 	GetDlgItem(IDC_SENDMSG_EDIT)->SetWindowTextW(_T(""));
 
+}
+
+
+void CMFCChatClientDlg::OnBnClickedSavenameBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//保存昵称
+// 	WritePrivateProfileStringW(
+// 		_In_opt_ LPCWSTR lpAppName, //项名
+// 		_In_opt_ LPCWSTR lpKeyName, //键名
+// 		_In_opt_ LPCWSTR lpString,  //内容
+// 		_In_opt_ LPCWSTR lpFileName //路径
+// 	);
+	CString strName;
+	WCHAR strPath[MAX_PATH] = { 0 };
+	//获取当前路径
+	GetCurrentDirectoryW(MAX_PATH,strPath);
+	TRACE("[Chat Client]strPath=%ls", strPath);
+	CString strFilePath;
+	strFilePath.Format(L"%ls//Test.ini", strPath);
+	//从控件中读取文本(昵称)
+	GetDlgItemText(IDC_NAME_EDIT, strName);
+
+	WritePrivateProfileStringW(_T("CLIENT"), _T("NAME"), strName, strFilePath);
 }
