@@ -25,7 +25,7 @@ void CMySocket::OnConnect(int nErrorCode)
 	CString strShow;
 	CString strInfo = _T("");
 	CString strMsg = _T("连接服务器成功:");
-	strShow = dlg->CutShowString(strInfo, strMsg);
+	strShow = dlg->CutShowString(strMsg);
 	dlg->m_list.AddString(strShow);
 	CAsyncSocket::OnConnect(nErrorCode);
 }
@@ -43,7 +43,7 @@ void CMySocket::OnReceive(int nErrorCode)
 
 	CString strShow;
 	CString strInfo = _T("服务端: ");
-	strShow = dlg->CutShowString(strInfo, strRecvMsg);
+	strShow = dlg->CutShowString(strRecvMsg);
 
 	dlg->m_list.AddString(strShow);
 	CAsyncSocket::OnReceive(nErrorCode);

@@ -23,7 +23,7 @@ void CServerSocket::OnAccept(int nErrorCode)
 	CString strShow;
 	CString strInfo = _T("");
 	CString strMsg = _T("客户端连接成功...");
-	strShow = dlg->CutShowString(strInfo, strMsg);
+	strShow = dlg->CutShowString(strMsg);
 
 	dlg->m_list.AddString(strShow);
 	dlg->m_list.UpdateData(FALSE);

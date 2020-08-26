@@ -172,7 +172,7 @@ void CMFCCHATServerDlg::OnEnChangePortEdit()
 }
 
 //定义一个显示信息的成员函数
-CString CMFCCHATServerDlg::CutShowString(CString strInfo, CString strMsg)
+CString CMFCCHATServerDlg::CutShowString(CString strMsg)
 {
 	//格式:时间+昵称+消息
 	CString strTime;
@@ -180,8 +180,8 @@ CString CMFCCHATServerDlg::CutShowString(CString strInfo, CString strMsg)
 	tmNow = CTime::GetCurrentTime();
 	strTime = tmNow.Format("%X");
 	CString strShow;
-	strShow = strTime + strShow;
-	strShow += strInfo;
+	strShow = strTime +_T(" ") + strShow;
+	//strShow += strInfo;
 	strShow += strMsg;
 	return strShow;
 }
@@ -225,9 +225,9 @@ void CMFCCHATServerDlg::OnBnClickedStartBtn()
 	str += _T("建立服务...");*/
 
 	CString strShow;
-	CString strInfo = _T("");
+	//CString strInfo = _T("");
 	CString strMsg = _T("建立服务...");
-	strShow = CutShowString(strInfo, strMsg);
+	strShow = CutShowString(strMsg);
 
 	m_list.AddString(strShow);
 	UpdateData(FALSE);
@@ -240,15 +240,16 @@ void CMFCCHATServerDlg::OnBnClickedSendBtn()
 	//1.获取编辑框内容
 	CString strTmpMsg;
 	GetDlgItem(IDC_SEND_EDIT)->GetWindowTextW(strTmpMsg);
+	strTmpMsg = _T("服务端: ") + strTmpMsg;
 	USES_CONVERSION;
 	char* szSendBuf = T2A(strTmpMsg);
 	//2.发送给客户端
 	m_chat->Send(szSendBuf, SERVER_MAX_BUF, 0);
 	//3.显示到列表框里
 	CString strShow;
-	CString strInfo = _T("服务端: ");
+	//CString strInfo = _T("服务端: ");
 	//CString strMsg = _T("建立服务...");
-	strShow = CutShowString(strInfo, strTmpMsg);
+	strShow = CutShowString(strTmpMsg);
 
 	m_list.AddString(strShow);
 	UpdateData(FALSE);

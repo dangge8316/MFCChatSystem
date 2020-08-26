@@ -22,9 +22,9 @@ void ChatSocket::OnReceive(int nErrorCode)
 	CString strRecvMsg = A2W(szRecveBuf);
 
 	CString strShow;
-	CString strInfo = _T("客户端: ");
+	//CString strInfo = _T("客户端: ");
 	//CString strMsg = _T("");
-	strShow = dlg->CutShowString(strInfo, strRecvMsg);
+	strShow = dlg->CutShowString(strRecvMsg);
 
 	dlg->m_list.AddString(strShow);
 	CAsyncSocket::OnReceive(nErrorCode);

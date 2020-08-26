@@ -117,10 +117,22 @@ BOOL CMFCChatClientDlg::OnInitDialog()
 	TRACE("[Chat Client]strPath=%ls", strPath);
 	CString strFilePath;
 	strFilePath.Format(L"%ls//Test.ini", strPath);
-	GetPrivateProfileStringW(_T("CLIENT"), _T("NAME"), NULL,wszName,MAX_PATH,strFilePath);
-	TRACE("[Chat Client]wszName=%ls", wszName);
-	SetDlgItemText(IDC_NAME_EDIT, wszName);
-	UpdateData(FALSE);
+	DWORD dwNum = GetPrivateProfileStringW(_T("CLIENT"), _T("NAME"), NULL,wszName,MAX_PATH,strFilePath);
+	if (dwNum > 0)
+	{
+		TRACE("[Chat Client]wszName=%ls", wszName);
+		SetDlgItemText(IDC_NAME_EDIT, wszName);
+		UpdateData(FALSE);
+	}
+	else
+	{
+		WritePrivateProfileStringW(_T("CLIENT"), _T("NAME"), L"客户端", strFilePath);
+		SetDlgItemText(IDC_NAME_EDIT, L"客户端");
+		UpdateData(FALSE);
+	}
+// 	TRACE("[Chat Client]wszName=%ls", wszName);
+// 	SetDlgItemText(IDC_NAME_EDIT, wszName);
+// 	UpdateData(FALSE);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -180,7 +192,7 @@ void CMFCChatClientDlg::OnBnClickedClearmsgBtn()
 }
 
 //定义一个显示信息的成员函数
-CString CMFCChatClientDlg::CutShowString(CString strInfo,CString strMsg)
+CString CMFCChatClientDlg::CutShowString(CString strMsg)
 {
 	//格式:时间+昵称+消息
 	CString strTime;
@@ -188,8 +200,8 @@ CString CMFCChatClientDlg::CutShowString(CString strInfo,CString strMsg)
 	tmNow = CTime::GetCurrentTime();
 	strTime = tmNow.Format("%X");
 	CString strShow;
-	strShow = strTime + strShow;
-	strShow += strInfo;
+	strShow = strTime + _T(" ") + strShow;
+	//strShow += strInfo;
 	strShow += strMsg;
 	return strShow;
 }
@@ -244,15 +256,18 @@ void CMFCChatClientDlg::OnBnClickedSendBtn()
 	//1.获取编辑框内容
 	CString strTmpMsg;
 	GetDlgItem(IDC_SENDMSG_EDIT)->GetWindowTextW(strTmpMsg);
+	CString strname;
+	GetDlgItemText(IDC_NAME_EDIT, strname);
+	strTmpMsg = strname + _T(": ") + strTmpMsg;
 	USES_CONVERSION;
 	char* szSendBuf = T2A(strTmpMsg);
 	//2.发送给服务端
 	m_client->Send(szSendBuf, SEND_MAX_BUF, 0);
 	//3.显示到列表框里
 	CString strShow;
-	CString strInfo = _T("我: ");
+	//CString strInfo = _T("我: ");
 	CString strMsg = _T("");
-	strShow = CutShowString(strInfo, strTmpMsg);
+	strShow = CutShowString(strTmpMsg);
 
 	m_list.AddString(strShow);
 	UpdateData(FALSE);
@@ -273,14 +288,23 @@ void CMFCChatClientDlg::OnBnClickedSavenameBtn()
 // 		_In_opt_ LPCWSTR lpFileName //路径
 // 	);
 	CString strName;
-	WCHAR strPath[MAX_PATH] = { 0 };
-	//获取当前路径
-	GetCurrentDirectoryW(MAX_PATH,strPath);
-	TRACE("[Chat Client]strPath=%ls", strPath);
-	CString strFilePath;
-	strFilePath.Format(L"%ls//Test.ini", strPath);
-	//从控件中读取文本(昵称)
 	GetDlgItemText(IDC_NAME_EDIT, strName);
-
-	WritePrivateProfileStringW(_T("CLIENT"), _T("NAME"), strName, strFilePath);
+	if (strName.GetLength()<=0)
+	{
+		MessageBox(L"昵称不能为空");
+		return;
+	}
+	if (IDOK == AfxMessageBox(_T("确定要修改昵称吗?"), MB_OKCANCEL))
+	{
+		
+		WCHAR strPath[MAX_PATH] = { 0 };
+		//获取当前路径
+		GetCurrentDirectoryW(MAX_PATH, strPath);
+		TRACE("[Chat Client]strPath=%ls", strPath);
+		CString strFilePath;
+		strFilePath.Format(L"%ls//Test.ini", strPath);
+		//从控件中读取文本(昵称)
+		GetDlgItemText(IDC_NAME_EDIT, strName);
+		WritePrivateProfileStringW(_T("CLIENT"), _T("NAME"), strName, strFilePath);
+	}	
 }

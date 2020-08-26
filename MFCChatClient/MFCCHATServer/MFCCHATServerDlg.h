@@ -40,5 +40,5 @@ public:
 	CServerSocket* m_server;
 	ChatSocket* m_chat;
 	afx_msg void OnBnClickedSendBtn();
-	CString CutShowString(CString strInfo, CString strMsg);
+	CString CutShowString(CString strMsg);
 };
