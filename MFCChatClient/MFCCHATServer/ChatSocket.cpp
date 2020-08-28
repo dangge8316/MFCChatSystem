@@ -27,5 +27,6 @@ void ChatSocket::OnReceive(int nErrorCode)
 	strShow = dlg->CutShowString(strRecvMsg);
 
 	dlg->m_list.AddString(strShow);
+
 	CAsyncSocket::OnReceive(nErrorCode);
 }

@@ -42,9 +42,30 @@ void CMySocket::OnReceive(int nErrorCode)
 	CString strRecvMsg = A2W(szRecveBuf);
 
 	CString strShow;
-	CString strInfo = _T("服务端: ");
+	//CString strInfo = _T("服务端: ");
 	strShow = dlg->CutShowString(strRecvMsg);
 
 	dlg->m_list.AddString(strShow);
+
+	//自动回复功能,选中自动回复单选框按钮
+	if (((CButton*)dlg->GetDlgItem(IDC_AUTOSEND_CHECK))->GetCheck())
+	{
+		//自动回复
+		//1.读取编辑框里的内容
+		CString strAutoSendMsg;
+		dlg->GetDlgItemTextW(IDC_AUTOSEND_EDIT, strAutoSendMsg);
+		//2.封包+组格式:时间+昵称+[自动回复]+内容
+		CString strName;
+		dlg->GetDlgItemTextW(IDC_NAME_EDIT, strName);
+		CString strMsg = _T("[自动回复]: ") + strAutoSendMsg;
+		strMsg = dlg->CutShowString(strName) + strMsg;
+		dlg->m_list.AddString(strMsg);
+		dlg->UpdateData(FALSE);
+		//发送自动回复消息到服务端
+		char* strAutoMsg;
+		CString strAutoSend = strName + _T("[自动回复]: ") + strAutoSendMsg;
+		strAutoMsg = T2A(strAutoSend);
+		dlg->m_client->Send(strAutoMsg, SEND_MAX_BUF, 0);
+	}
 	CAsyncSocket::OnReceive(nErrorCode);
 }

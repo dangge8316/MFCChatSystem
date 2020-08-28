@@ -61,6 +61,7 @@ void CMFCChatClientDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_HISTORYMSG_LIST, m_list);
 	DDX_Control(pDX, IDC_SENDMSG_EDIT, m_input);
+	DDX_Control(pDX, IDC_COLOR_COMBO, m_CWordColorCombo);
 }
 
 BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
@@ -72,6 +73,8 @@ BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_DISCONNECT_BTN, &CMFCChatClientDlg::OnBnClickedDisconnectBtn)
 	ON_BN_CLICKED(IDC_SEND_BTN, &CMFCChatClientDlg::OnBnClickedSendBtn)
 	ON_BN_CLICKED(IDC_SAVENAME_BTN, &CMFCChatClientDlg::OnBnClickedSavenameBtn)
+	ON_BN_CLICKED(IDC_AUTOSEND_CHECK, &CMFCChatClientDlg::OnBnClickedAutosendCheck)
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -130,9 +133,20 @@ BOOL CMFCChatClientDlg::OnInitDialog()
 		SetDlgItemText(IDC_NAME_EDIT, L"客户端");
 		UpdateData(FALSE);
 	}
-// 	TRACE("[Chat Client]wszName=%ls", wszName);
-// 	SetDlgItemText(IDC_NAME_EDIT, wszName);
-// 	UpdateData(FALSE);
+	//初始化控件
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_DISCONNECT_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CONNECT_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_AUTOSEND_CHECK)->EnableWindow(FALSE);
+
+	m_CWordColorCombo.AddString(_T("黑色"));
+	m_CWordColorCombo.AddString(_T("红色"));
+	m_CWordColorCombo.AddString(_T("蓝色"));
+	m_CWordColorCombo.AddString(_T("绿色"));
+	m_CWordColorCombo.AddString(_T("橙色"));
+	//设置当前下标为零
+	m_CWordColorCombo.SetCurSel(0); 
+	SetDlgItemText(IDC_COLOR_COMBO, _T("黑色"));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -189,6 +203,7 @@ HCURSOR CMFCChatClientDlg::OnQueryDragIcon()
 void CMFCChatClientDlg::OnBnClickedClearmsgBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	m_list.ResetContent();
 }
 
 //定义一个显示信息的成员函数
@@ -209,6 +224,11 @@ CString CMFCChatClientDlg::CutShowString(CString strMsg)
 void CMFCChatClientDlg::OnBnClickedConnectBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_DISCONNECT_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CONNECT_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_AUTOSEND_CHECK)->EnableWindow(TRUE);
+
 	//把IP和端口号拿到
 	TRACE("[Chat Client]Connect Button");
 	CString csPort, csIp;
@@ -247,6 +267,24 @@ void CMFCChatClientDlg::OnBnClickedConnectBtn()
 void CMFCChatClientDlg::OnBnClickedDisconnectBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	//1.控制控件
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_DISCONNECT_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CONNECT_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_AUTOSEND_CHECK)->EnableWindow(FALSE);
+
+	//2.回收资源
+	m_client->Close();
+	if (m_client != NULL)
+	{
+		delete m_client;
+		m_client = NULL;
+	}
+	//3.显示到列表框
+	CString strShow;
+	strShow = CutShowString(_T("与服务器断开链接..."));
+	m_list.AddString(strShow);
+	UpdateData(FALSE);
 }
 
 
@@ -273,7 +311,6 @@ void CMFCChatClientDlg::OnBnClickedSendBtn()
 	UpdateData(FALSE);
 	//清空编辑框
 	GetDlgItem(IDC_SENDMSG_EDIT)->SetWindowTextW(_T(""));
-
 }
 
 
@@ -307,4 +344,51 @@ void CMFCChatClientDlg::OnBnClickedSavenameBtn()
 		GetDlgItemText(IDC_NAME_EDIT, strName);
 		WritePrivateProfileStringW(_T("CLIENT"), _T("NAME"), strName, strFilePath);
 	}	
+}
+
+
+void CMFCChatClientDlg::OnBnClickedAutosendCheck()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if (((CButton*)GetDlgItem(IDC_AUTOSEND_CHECK))->GetCheck())
+	{
+		((CButton*)GetDlgItem(IDC_AUTOSEND_CHECK))->SetCheck(FALSE);
+	}
+	else
+	{
+		((CButton*)GetDlgItem(IDC_AUTOSEND_CHECK))->SetCheck(TRUE);
+	}
+}
+
+
+HBRUSH CMFCChatClientDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+	CString strColor;
+	m_CWordColorCombo.GetWindowTextW(strColor);
+
+	if (IDC_HISTORYMSG_LIST == pWnd->GetDlgCtrlID() || IDC_SENDMSG_EDIT == pWnd->GetDlgCtrlID())
+	{
+		if (strColor == L"黑色")
+		{
+			pDC->SetTextColor(RGB(0, 0, 0));
+		}
+		else if (strColor == L"红色")
+		{
+			pDC->SetTextColor(RGB(255, 0, 0));
+		}
+		else if (strColor == L"绿色")
+		{
+			pDC->SetTextColor(RGB(0, 255, 0));
+		}
+		else if (strColor == L"蓝色")
+		{
+			pDC->SetTextColor(RGB(0, 0, 255));
+		}
+		else if (strColor == L"橙色")
+		{
+			pDC->SetTextColor(RGB(255, 165, 0));
+		}
+	}
+	return hbr;
 }

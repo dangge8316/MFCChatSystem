@@ -61,6 +61,7 @@ void CMFCCHATServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_MSG_LIST, m_list);
+	DDX_Control(pDX, IDC_COLOR_COMBO, m_CWordColorCombo);
 }
 
 BEGIN_MESSAGE_MAP(CMFCCHATServerDlg, CDialogEx)
@@ -70,6 +71,9 @@ BEGIN_MESSAGE_MAP(CMFCCHATServerDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_PORT_EDIT, &CMFCCHATServerDlg::OnEnChangePortEdit)
 	ON_BN_CLICKED(IDC_START_BTN, &CMFCCHATServerDlg::OnBnClickedStartBtn)
 	ON_BN_CLICKED(IDC_SEND_BTN, &CMFCCHATServerDlg::OnBnClickedSendBtn)
+	ON_BN_CLICKED(IDC_CLEAR_BTN, &CMFCCHATServerDlg::OnBnClickedClearBtn)
+	ON_BN_CLICKED(IDC_STOP_BTN, &CMFCCHATServerDlg::OnBnClickedStopBtn)
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -107,6 +111,20 @@ BOOL CMFCCHATServerDlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
 	GetDlgItem(IDC_PORT_EDIT)->SetWindowText(_T("6000"));
 
+	//初始化控件
+	GetDlgItem(IDC_START_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_STOP_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(FALSE);
+
+	m_CWordColorCombo.AddString(_T("黑色"));
+	m_CWordColorCombo.AddString(_T("红色"));
+	m_CWordColorCombo.AddString(_T("蓝色"));
+	m_CWordColorCombo.AddString(_T("绿色"));
+	m_CWordColorCombo.AddString(_T("橙色"));
+	//设置当前下标为零
+	m_CWordColorCombo.SetCurSel(0);
+	SetDlgItemText(IDC_COLOR_COMBO, _T("黑色"));
+	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -189,6 +207,11 @@ CString CMFCCHATServerDlg::CutShowString(CString strMsg)
 void CMFCCHATServerDlg::OnBnClickedStartBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
+
+	GetDlgItem(IDC_START_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_STOP_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(TRUE);
+
 	TRACE("[Chat Client]Start Server");
 	//从控件里获取内容
 	CString csPort;
@@ -255,4 +278,71 @@ void CMFCCHATServerDlg::OnBnClickedSendBtn()
 	UpdateData(FALSE);
 	//清空编辑框
 	GetDlgItem(IDC_SEND_EDIT)->SetWindowTextW(_T(""));
+}
+
+
+void CMFCCHATServerDlg::OnBnClickedClearBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_list.ResetContent();
+}
+
+
+void CMFCCHATServerDlg::OnBnClickedStopBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//1.控制控件
+	GetDlgItem(IDC_START_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_STOP_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(TRUE);
+	//2.回收资源
+	m_server->Close();
+	if (m_server != NULL)
+	{
+		delete m_server;
+		m_server = NULL;
+	}
+
+	if (m_chat != NULL)
+	{
+		delete m_chat;
+		m_chat = NULL;
+	}
+	CString strShow;
+	strShow = CutShowString(_T("停止服务..."));
+	m_list.AddString(strShow);
+	UpdateData(FALSE);
+}
+
+
+HBRUSH CMFCCHATServerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+	CString strColor;
+	m_CWordColorCombo.GetWindowTextW(strColor);
+
+	if (IDC_MSG_LIST == pWnd->GetDlgCtrlID() || IDC_SEND_EDIT == pWnd->GetDlgCtrlID())
+	{
+		if (strColor == L"黑色")
+		{
+			pDC->SetTextColor(RGB(0, 0, 0));
+		}
+		else if (strColor == L"红色")
+		{
+			pDC->SetTextColor(RGB(255, 0, 0));
+		}
+		else if (strColor == L"绿色")
+		{
+			pDC->SetTextColor(RGB(0, 255, 0));
+		}
+		else if (strColor == L"蓝色")
+		{
+			pDC->SetTextColor(RGB(0, 0, 255));
+		}
+		else if (strColor == L"橙色")
+		{
+			pDC->SetTextColor(RGB(255, 165, 0));
+		}
+	}
+	return hbr;
 }

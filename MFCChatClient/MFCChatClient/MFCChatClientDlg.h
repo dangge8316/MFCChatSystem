@@ -41,4 +41,7 @@ public:
 	afx_msg void OnBnClickedSendBtn();
 	CString CutShowString(CString strMsg);
 	afx_msg void OnBnClickedSavenameBtn();
+	afx_msg void OnBnClickedAutosendCheck();
+	CComboBox m_CWordColorCombo;
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

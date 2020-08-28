@@ -41,4 +41,8 @@ public:
 	ChatSocket* m_chat;
 	afx_msg void OnBnClickedSendBtn();
 	CString CutShowString(CString strMsg);
+	afx_msg void OnBnClickedClearBtn();
+	afx_msg void OnBnClickedStopBtn();
+	CComboBox m_CWordColorCombo;
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
