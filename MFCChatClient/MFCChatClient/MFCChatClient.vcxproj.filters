@@ -65,5 +65,8 @@
     <Image Include="res\MFCChatClient.ico">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="C:\Users\17972\Desktop\srv.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

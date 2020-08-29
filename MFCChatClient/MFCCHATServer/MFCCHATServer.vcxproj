@@ -211,6 +211,9 @@
     <None Include="res\MFCCHATServer.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="C:\Users\17972\Desktop\cli.bmp" />
+    <Image Include="C:\Users\17972\Desktop\srv.bmp" />
+    <Image Include="res\bitmap1.bmp" />
     <Image Include="res\MFCCHATServer.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

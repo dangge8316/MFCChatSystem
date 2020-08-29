@@ -44,4 +44,5 @@ public:
 	afx_msg void OnBnClickedAutosendCheck();
 	CComboBox m_CWordColorCombo;
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

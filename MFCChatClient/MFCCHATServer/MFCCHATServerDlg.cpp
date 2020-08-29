@@ -74,6 +74,9 @@ BEGIN_MESSAGE_MAP(CMFCCHATServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CLEAR_BTN, &CMFCCHATServerDlg::OnBnClickedClearBtn)
 	ON_BN_CLICKED(IDC_STOP_BTN, &CMFCCHATServerDlg::OnBnClickedStopBtn)
 	ON_WM_CTLCOLOR()
+	ON_BN_CLICKED(IDC_CAL_BTN, &CMFCCHATServerDlg::OnBnClickedCalBtn)
+	ON_BN_CLICKED(IDC_MAIL_BTN, &CMFCCHATServerDlg::OnBnClickedMailBtn)
+	ON_BN_CLICKED(IDC_QQ_BTN, &CMFCCHATServerDlg::OnBnClickedQqBtn)
 END_MESSAGE_MAP()
 
 
@@ -166,6 +169,26 @@ void CMFCCHATServerDlg::OnPaint()
 	}
 	else
 	{
+		////1.定义dc, 用于绘制的设备上下文
+		//CPaintDC dc(this); 
+		////2.确定绘制的目的区域
+		//CRect rect;
+		//GetClientRect(&rect);
+		//TRACE("[Chat Server]width=%d,height=%d", rect.Width(), rect.Height());
+		////3.定义并创建一个内存设备环境,创建兼容性DC--搭建桥梁
+		//CDC dcBmp;
+		//dcBmp.CreateCompatibleDC(&dcBmp);
+		////4.载入资源图片
+		//CBitmap bmpBackGround;
+		//bmpBackGround.LoadBitmap(IDB_SRV_BITMAP);
+		////5.将图片资源载入到位图里面
+		//BITMAP bBitmap;
+		//bmpBackGround.GetBitmap(&bBitmap);
+		////6.将位图选入临时的内存设备环境
+		//CBitmap* pbmpOld = dcBmp.SelectObject(&bmpBackGround);
+		////7.开始绘制
+		//dc.StretchBlt(0,0,rect.Width(),rect.Height(),&dcBmp,0,0,bBitmap.bmWidth,bBitmap.bmHeight,SRCCOPY);
+
 		CDialogEx::OnPaint();
 	}
 }
@@ -345,4 +368,57 @@ HBRUSH CMFCCHATServerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		}
 	}
 	return hbr;
+}
+
+
+void CMFCCHATServerDlg::OnBnClickedCalBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	ShellExecute(NULL, L"open", L"calc.exe", NULL, NULL, SW_SHOWNORMAL);
+}
+
+
+void CMFCCHATServerDlg::OnBnClickedMailBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	ShellExecute(NULL, L"open", L"https://mail.qq.com", NULL, NULL, SW_SHOWNORMAL);
+}
+
+
+void CMFCCHATServerDlg::OnBnClickedQqBtn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	ShellExecute(NULL, L"open", L"D:\\Tencent\\QQ\\Bin\\QQScLauncher.exe", NULL, NULL, SW_SHOWNORMAL);
+}
+
+
+BOOL CMFCCHATServerDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// 屏蔽回车键
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
+	{
+		TRACE("[Chat Server]回车");
+		return TRUE;
+	}
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_SPACE)
+	{
+		TRACE("[Chat Server]空格");
+		return TRUE;
+	}
+	//添加快捷键 ctrl+x退出整个对话框
+	if (pMsg->message == WM_KEYDOWN)
+	{
+
+		if (GetKeyState(VK_CONTROL) < 0)
+		{
+			TRACE("[Chat Server]按下ctrl键");
+			if (pMsg->wParam == 'X')
+			{
+				TRACE("[Chat Server]按下ctrl+x键");
+				CDialogEx::OnOK();
+			}
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }
